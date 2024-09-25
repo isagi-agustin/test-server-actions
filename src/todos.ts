@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { revalidatePath } from 'next/cache';
+import { unstable_cache, revalidateTag } from 'next/cache';
 
 export interface Todo {
   id: string;
@@ -7,7 +7,7 @@ export interface Todo {
   completed: boolean;
 }
 
-export async function getTodos(): Promise<Todo[]> {
+async function getTodosFromFile(): Promise<Todo[]> {
   const file = await fs.readFile("todos.json", "utf8");
   return JSON.parse(file.toString()) as Todo[];
 }
@@ -22,5 +22,13 @@ export async function addTodo(title: string) {
   };
   todos.push(newTodo);
   await fs.writeFile("todos.json", JSON.stringify(todos, null, 2));
-  revalidatePath("/");
+  revalidateTag("todos");
 }
+
+export const getTodos = unstable_cache(
+  getTodosFromFile,
+  ["todo-list"],
+  {
+    tags: ["todos"]
+  }
+);
