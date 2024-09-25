@@ -1,6 +1,9 @@
 import { promises as fs } from 'fs';
+import { revalidatePath } from 'next/cache';
 
 export interface Todo {
+  id: string;
+  title: string;
   completed: boolean;
 }
 
@@ -10,6 +13,7 @@ export async function getTodos(): Promise<Todo[]> {
 }
 
 export async function addTodo(title: string) {
+  "use server";
   const todos = await getTodos();
   const newTodo = {
     id: Math.random().toString(36).substring(7),
@@ -18,4 +22,5 @@ export async function addTodo(title: string) {
   };
   todos.push(newTodo);
   await fs.writeFile("todos.json", JSON.stringify(todos, null, 2));
+  revalidatePath("/");
 }
