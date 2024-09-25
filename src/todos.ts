@@ -1,3 +1,5 @@
+"use server"
+
 import { promises as fs } from 'fs';
 import { unstable_cache, revalidateTag } from 'next/cache';
 
@@ -5,11 +7,6 @@ export interface Todo {
   id: string;
   title: string;
   completed: boolean;
-}
-
-async function getTodosFromFile(): Promise<Todo[]> {
-  const file = await fs.readFile("todos.json", "utf8");
-  return JSON.parse(file.toString()) as Todo[];
 }
 
 export async function addTodo(title: string) {
@@ -23,6 +20,16 @@ export async function addTodo(title: string) {
   todos.push(newTodo);
   await fs.writeFile("todos.json", JSON.stringify(todos, null, 2));
   revalidateTag("todos");
+}
+
+export async function getTodoCount() {
+  const todos = await getTodos();
+  return todos.length;
+}
+
+async function getTodosFromFile(): Promise<Todo[]> {
+  const file = await fs.readFile("todos.json", "utf8");
+  return JSON.parse(file.toString()) as Todo[];
 }
 
 export const getTodos = unstable_cache(

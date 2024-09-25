@@ -1,22 +1,25 @@
 "use client";
 
-import React from "react";
-import { useState } from 'react';
-import { Todo } from "../todos";
+import React, { useState, useEffect } from "react";
+import { Todo, getTodoCount } from "../todos";
 
 export default function Todos({
   todos,
   addTodo,
+  todoCount,
  }: {
   todos: Todo[],
-  addTodo: (title: string) => Promise<void>
+  addTodo: (title: string) => Promise<void>,
+  todoCount: number,
 }) {
 
   const [newTodo, setNewTodo] = useState("");
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-5">Todos</h2>
+      <h2 className="text-2xl font-bold mb-5">
+        Todos ({todoCount})
+      </h2>
       <ul>
         {todos.map((todo) => (
           <li key={todo.id} className="mb-2">
